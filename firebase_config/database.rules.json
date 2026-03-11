@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "WaterHistory": {
+      "$device_uid": {
+        ".read": "auth != null",
+        ".write": true,
+        "$reading_id": {
+          ".validate": "newData.hasChildren(['ph', 'ntu', 'temp', 'light', 'server_time'])"
+        }
+      }
+    },
+    ".read": false,
+    ".write": false
+  }
+}

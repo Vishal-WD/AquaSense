@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper: Check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper: Get the user's role from Firestore
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    // Helper: Get the user's city
+    function getUserCity() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.city;
+    }
+
+    // ─── Users Collection ───
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isAuth() && request.auth.uid == userId;
+      // Admins can read users in their city
+      allow read: if isAuth() && getUserRole() == 'admin';
+      // NGOs can read all users
+      allow read: if isAuth() && getUserRole() == 'ngo';
+      // Users can create their own profile on registration
+      allow create: if isAuth() && request.auth.uid == userId;
+      // Admins can update any user (for UID assignment)
+      allow update: if isAuth() && getUserRole() == 'admin';
+      // Users can update their own profile
+      allow update: if isAuth() && request.auth.uid == userId;
+    }
+
+    // ─── Public Stations Collection ───
+    match /public_stations/{stationId} {
+      // All authenticated users can read stations
+      allow read: if isAuth();
+      // Only admins can create/update/delete stations
+      allow create, update, delete: if isAuth() && getUserRole() == 'admin';
+    }
+
+    // ─── Manual Alerts Collection ───
+    match /manual_alerts/{alertId} {
+      // All authenticated users can read alerts
+      allow read: if isAuth();
+      // Only admins and NGOs can create alerts
+      allow create: if isAuth() && (getUserRole() == 'admin' || getUserRole() == 'ngo');
+      // Only admins can update/delete alerts
+      allow update, delete: if isAuth() && getUserRole() == 'admin';
+    }
+  }
+}

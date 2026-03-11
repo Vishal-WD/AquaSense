@@ -1,0 +1,83 @@
+<ion-header class="glass-header ion-no-border">
+  <ion-toolbar style="--background: transparent; --border-width: 0;">
+    <ion-buttons slot="start">
+      <ion-menu-button style="color: #60a5fa;"></ion-menu-button>
+    </ion-buttons>
+    <ion-title style="color: #f8fafc; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.5px;">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <ion-icon name="water" style="color: #3b82f6;"></ion-icon>
+        Water Stations
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="dashboard-content">
+  <div class="search-container">
+    <ion-searchbar 
+      placeholder="Search by Station Name, City, or State..." 
+      (ionInput)="handleSearch($event)"
+      [debounce]="250"
+      animated="true"
+      style="--background: rgba(255, 255, 255, 0.05); --color: #f8fafc; --placeholder-color: #94a3b8; --border-radius: 12px; padding: 16px;">
+    </ion-searchbar>
+  </div>
+
+  <ng-container *ngIf="isSearching; else accordionView">
+    <div style="padding: 0 16px;">
+      <h4 style="color: #94a3b8; font-size: 13px; text-transform: uppercase;">Search Results ({{filteredStations.length}})</h4>
+      <ion-list style="background: transparent;">
+        <ion-item *ngFor="let station of filteredStations" (click)="viewStation(station)" button [ngStyle]="{'--background': 'rgba(255,255,255,0.03)', 'border-radius': '12px', 'margin-bottom': '8px', 'border-left': '4px solid var(--ion-color-' + (station.status === 'safe' ? 'success' : station.status === 'warning' ? 'warning' : 'danger') + ')'}">
+          <ion-icon name="location" slot="start" style="color: #60a5fa; margin-right: 12px;"></ion-icon>
+          <ion-label>
+            <h3 style="color: #f8fafc; font-weight: 500;">{{ station.name }}</h3>
+            <p style="color: #94a3b8; font-size: 12px;">{{ station.city }}, {{ station.state }}, {{ station.country }}</p>
+          </ion-label>
+          <ion-icon name="chevron-forward" slot="end" style="color: #475569; font-size: 16px;"></ion-icon>
+        </ion-item>
+        <div *ngIf="filteredStations.length === 0" style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+          <ion-icon name="search-outline" style="font-size: 48px; opacity: 0.5; margin-bottom: 16px;"></ion-icon>
+          <p>No stations found matching "{{searchQuery}}"</p>
+        </div>
+      </ion-list>
+    </div>
+  </ng-container>
+
+  <ng-template #accordionView>
+    <div class="accordion-container" style="padding: 0 16px 24px;">
+      <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">Browse {{allStations.length}} Global Public Stations</p>
+      
+      <ion-accordion-group [value]="userCountry" expand="inset" style="margin: 0;">
+        <ion-accordion *ngFor="let country of countries" [value]="country" style="background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 12px;">
+          <ion-item slot="header" style="--background: transparent; font-size: 15px; font-weight: 600; color: #f8fafc;">
+            <ion-icon name="earth" slot="start" style="color: #3b82f6;"></ion-icon>
+            <ion-label>{{ country }}</ion-label>
+            <ion-badge slot="end" style="--background: rgba(59, 130, 246, 0.2); color: #60a5fa;">{{ (groupedStations[country] | keyvalue).length }} States</ion-badge>
+          </ion-item>
+          
+          <div class="ion-padding" slot="content" style="padding: 0;">
+            <ion-accordion-group style="padding: 0 16px 12px;">
+              <ion-accordion *ngFor="let state of groupedStations[country] | keyvalue" [value]="state.key" style="background: transparent; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <ion-item slot="header" style="--background: transparent; font-size: 14px; color: #cbd5e1;">
+                  <ion-label>{{ state.key }}</ion-label>
+                  <span style="font-size: 11px; color: #64748b; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">{{ state.value.length }} Stations</span>
+                </ion-item>
+                
+                <div slot="content" style="padding-bottom: 8px;">
+                  <ion-list style="background: transparent;">
+                    <ion-item *ngFor="let station of state.value" (click)="viewStation(station)" button detail="false" style="--background: rgba(255,255,255,0.01); font-size: 13px; border-left: 2px solid #3b82f6; margin-bottom: 2px; --min-height: 48px;">
+                      <ion-label class="ion-text-wrap" style="color: #94a3b8;">
+                        <span style="color: #e2e8f0; font-weight: 500;">{{ station.city }}</span> • {{ station.name.split('] ')[1] || station.name }}
+                      </ion-label>
+                      <ion-icon name="arrow-forward" slot="end" style="color: #3b82f6; font-size: 14px; opacity: 0.5;"></ion-icon>
+                    </ion-item>
+                  </ion-list>
+                </div>
+              </ion-accordion>
+            </ion-accordion-group>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </div>
+  </ng-template>
+</ion-content>
