@@ -96,4 +96,4 @@ Awarded 2nd Place at EUPHORIA 2026 Techno-Management Meet.
 📄 License
 Distributed under the MIT License. See LICENSE for more information.
 
-Developed by Vishal
+Developed by Vishal,Aldo
