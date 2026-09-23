@@ -1,10 +1,5 @@
 # 💧 AquaSense: IoT-Based Global Water Quality Monitoring
 
-**🥇 2nd Place Winner at EUPHORIA 2026 Techno-Management Meet**
-
-A production-grade IoT and AI-driven solution for real-time water quality monitoring. Combines embedded systems, machine learning, and full-stack development to deliver actionable insights for citizens, NGOs, and government officials.
-
----
 
 ## 🚀 Key Features
 
@@ -89,4 +84,4 @@ cd frontend && npm install && ionic serve
 MIT License — See LICENSE for details
 
 **Built during:** Infosys Springboard Project Internship (Dec 2025 - Feb 2026)  
-**Developed by:** Vishal & Aldo
+**Developed by:** Vishal & Sanskruti
